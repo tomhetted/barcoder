@@ -2,48 +2,37 @@ package ru.smirnovjavadev;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.Map;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Заголовок окна
-        primaryStage.setTitle("Лакокрасочные продукты");
+        // Получение данных через ProductService
+        Map<String, Map<String, Product>> productData = ProductService.getProducts();
 
-        // Создание компонентов
+        // Создание компонентов интерфейса
         ComboBox<String> typeComboBox = new ComboBox<>();
         ComboBox<String> productComboBox = new ComboBox<>();
-        TextField detailsField = new TextField();
-        detailsField.setEditable(false);
-        detailsField.setPromptText("Выбранный продукт и фасовки будут здесь...");
+        VBox detailsBox = new VBox(5); // Отображение информации о фасовках
 
-        // Кнопка и логика копирования
-        Button copyButton = new Button("Копировать выделенное");
-        copyButton.setOnAction(e -> {
-            String selectedText = detailsField.getSelectedText();
-            if (selectedText != null && !selectedText.isEmpty()) {
-                Clipboard clipboard = Clipboard.getSystemClipboard();
-                ClipboardContent content = new ClipboardContent();
-                content.putString(selectedText);
-                clipboard.setContent(content);
-            }
-        });
+        // Заполнение первого ComboBox (типы продуктов)
+        typeComboBox.setItems(FXCollections.observableArrayList(productData.keySet()));
 
         // Обработка выбора типа продукта
-        typeComboBox.setItems(FXCollections.observableArrayList(ProductService.getProducts().keySet()));
         typeComboBox.setOnAction(e -> {
             String selectedType = typeComboBox.getValue();
             if (selectedType != null) {
-                productComboBox.setItems(FXCollections.observableArrayList(ProductService.getProducts().get(selectedType).keySet()));
+                productComboBox.setItems(FXCollections.observableArrayList(productData.get(selectedType).keySet()));
             }
         });
 
@@ -51,15 +40,42 @@ public class Main extends Application {
         productComboBox.setOnAction(e -> {
             String selectedType = typeComboBox.getValue();
             String selectedProduct = productComboBox.getValue();
+            detailsBox.getChildren().clear(); // Очистка предыдущих данных
+
             if (selectedType != null && selectedProduct != null) {
-                String details = ProductService.getProducts().get(selectedType).get(selectedProduct);
-                detailsField.setText("Фасовки: " + details);
+                Product product = productData.get(selectedType).get(selectedProduct);
+                if (product != null) {
+                    // Заполнение detailsBox: строки из ID, фасовки и кнопки "Копировать"
+                    product.getProductMap().forEach((id, volume) -> {
+                        // TextField для ID
+                        TextField idField = new TextField(id.toString());
+                        idField.setEditable(false); // Запрещаем редактирование
+                        idField.setPrefWidth(50);
+
+                        // Label для фасовки
+                        Label volumeLabel = new Label(volume);
+
+                        // Кнопка "Копировать"
+                        Button copyButton = new Button("Копировать");
+                        copyButton.setOnAction(copyEvent -> {
+                            Clipboard clipboard = Clipboard.getSystemClipboard();
+                            ClipboardContent content = new ClipboardContent();
+                            content.putString(id.toString()); // Копируем ID в буфер обмена
+                            clipboard.setContent(content);
+                        });
+
+                        // Объединяем элементы в строку
+                        HBox row = new HBox(10, idField, volumeLabel, copyButton);
+                        detailsBox.getChildren().add(row);
+                    });
+                }
             }
         });
 
-        // Контейнер для элементов
-        VBox layout = new VBox(10, typeComboBox, productComboBox, detailsField, copyButton);
-        layout.setPrefSize(400, 400);
+        // Компоновка интерфейса
+        VBox layout = new VBox(10, typeComboBox, productComboBox, detailsBox);
+        layout.setPadding(new Insets(10));
+        layout.setPrefSize(400, 300);
 
         // Создание сцены и отображение
         Scene scene = new Scene(layout);
