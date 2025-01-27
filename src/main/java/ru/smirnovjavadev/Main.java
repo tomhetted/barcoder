@@ -27,6 +27,8 @@ public class Main extends Application {
 
         // Заполнение первого ComboBox (типы продуктов)
         typeComboBox.setItems(FXCollections.observableArrayList(productData.keySet()));
+        typeComboBox.setStyle("-fx-font-size: 20px;");
+        productComboBox.setStyle("-fx-font-size: 20px;");
 
         // Обработка выбора типа продукта
         typeComboBox.setOnAction(e -> {
@@ -50,13 +52,16 @@ public class Main extends Application {
                         // TextField для ID
                         TextField idField = new TextField(id.toString());
                         idField.setEditable(false); // Запрещаем редактирование
-                        idField.setPrefWidth(50);
+                        idField.setPrefWidth(80);
+                        idField.setStyle("-fx-font-size: 20px;");
 
                         // Label для фасовки
                         Label volumeLabel = new Label(volume);
+                        volumeLabel.setStyle("-fx-font-size: 20px;");
 
                         // Кнопка "Копировать"
-                        Button copyButton = new Button("Копировать");
+                        Button copyButton = new Button("Копировать баркод");
+                        copyButton.setStyle("-fx-font-size: 20px;");
                         copyButton.setOnAction(copyEvent -> {
                             Clipboard clipboard = Clipboard.getSystemClipboard();
                             ClipboardContent content = new ClipboardContent();
@@ -65,7 +70,7 @@ public class Main extends Application {
                         });
 
                         // Объединяем элементы в строку
-                        HBox row = new HBox(10, idField, volumeLabel, copyButton);
+                        HBox row = new HBox(10, copyButton, idField, volumeLabel);
                         detailsBox.getChildren().add(row);
                     });
                 }
@@ -75,7 +80,8 @@ public class Main extends Application {
         // Компоновка интерфейса
         VBox layout = new VBox(10, typeComboBox, productComboBox, detailsBox);
         layout.setPadding(new Insets(10));
-        layout.setPrefSize(400, 300);
+        layout.setPrefSize(556, 420);
+        layout.setStyle("-fx-background-color: #a981de;"); // Фиолетовый фон
 
         // Создание сцены и отображение
         Scene scene = new Scene(layout);
