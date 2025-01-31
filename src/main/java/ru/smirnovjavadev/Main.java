@@ -3,6 +3,7 @@ package ru.smirnovjavadev;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
@@ -25,12 +26,12 @@ public class Main extends Application {
         ComboBox<String> productComboBox = new ComboBox<>();
         VBox detailsBox = new VBox(5); // Отображение информации о фасовках
 
-        // Заполнение первого ComboBox (типы продуктов)
+        // Заполнение первого ComboBox (типы ЛКМ)
         typeComboBox.setItems(FXCollections.observableArrayList(productData.keySet()));
         typeComboBox.setStyle("-fx-font-size: 20px;");
         productComboBox.setStyle("-fx-font-size: 20px;");
 
-        // Обработка выбора типа продукта
+        // Обработка выбора типа ЛКМ
         typeComboBox.setOnAction(e -> {
             String selectedType = typeComboBox.getValue();
             if (selectedType != null) {
@@ -53,15 +54,12 @@ public class Main extends Application {
                         TextField idField = new TextField(id.toString());
                         idField.setEditable(false); // Запрещаем редактирование
                         idField.setPrefWidth(80);
-                        idField.setStyle("-fx-font-size: 20px;");
 
                         // Label для фасовки
                         Label volumeLabel = new Label(volume);
-                        volumeLabel.setStyle("-fx-font-size: 20px;");
 
                         // Кнопка "Копировать"
-                        Button copyButton = new Button("Копировать баркод");
-                        copyButton.setStyle("-fx-font-size: 20px;");
+                        Button copyButton = new Button("Копировать");
                         copyButton.setOnAction(copyEvent -> {
                             Clipboard clipboard = Clipboard.getSystemClipboard();
                             ClipboardContent content = new ClipboardContent();
@@ -71,6 +69,7 @@ public class Main extends Application {
 
                         // Объединяем элементы в строку
                         HBox row = new HBox(10, copyButton, idField, volumeLabel);
+                        row.setAlignment(Pos.CENTER_LEFT); // Выравниваем элементы по вертикали
                         detailsBox.getChildren().add(row);
                     });
                 }
@@ -80,13 +79,14 @@ public class Main extends Application {
         // Компоновка интерфейса
         VBox layout = new VBox(10, typeComboBox, productComboBox, detailsBox);
         layout.setPadding(new Insets(10));
-        layout.setPrefSize(556, 420);
-        layout.setStyle("-fx-background-color: #a981de;"); // Фиолетовый фон
+        layout.setPrefSize(434, 352);
 
         // Создание сцены и отображение
         Scene scene = new Scene(layout);
+        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         primaryStage.setTitle("Продукты и фасовки");
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 

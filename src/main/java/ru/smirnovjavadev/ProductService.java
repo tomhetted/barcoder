@@ -145,7 +145,7 @@ public class ProductService {
         ))));
         productData.put("Лаки, масла и лазури Aura и Eskaro", lacquersOilsLazurs);
 
-        // Данные для "Декоративные штукатурки и покрытия Aura Dekor"
+        // Данные для "Декоративные покрытия Aura Dekor"
         Map<String, Product> dekor = new LinkedHashMap<>();
         dekor.put("Aura Dekor Grund", new Product(new LinkedHashMap<>(Map.of(
                 22883, "3,5кг",
@@ -198,7 +198,7 @@ public class ProductService {
         dekor.put("Aura Dekor Loft", new Product(new LinkedHashMap<>(Map.of(
                 39181, "15кг"
         ))));
-        productData.put("Декоративные штукатурки и покрытия Aura Dekor", dekor);
+        productData.put("Декоративные покрытия Aura Dekor", dekor);
 
         return productData;
     }
